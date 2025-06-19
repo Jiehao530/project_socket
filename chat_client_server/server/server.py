@@ -11,3 +11,10 @@ server.bind((IP, PORT))
 server.listen(5)
 clients = {}
 
+def manage_client(connection, address):
+    
+
+print("[*] Server awaiting connection...")
+while True:
+    connection, address = server.accept()
+    threading.Thread(target=manage_client, args=(connection, address)).start()
