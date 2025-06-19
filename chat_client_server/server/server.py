@@ -5,6 +5,7 @@ import socket
 import threading
 from chat_socket_project.config.settings import IP, PORT
 from chat_socket_project.auth.login import user_authentication
+from chat_socket_project.ia.openai import get_response_ia
 
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -33,7 +34,9 @@ def manage_client(connection, address):
 
             if message.startswith("IA"):
                 message_for_ia = message[2:].strip()
-            
+                response = get_response_ia(message_for_ia)
+                connection.send(f"ChatGPT: {response}".encode())
+
             else:
                 print(f"The user {user} said {message}")
                 message_to_send = f"{user}: {message}"
