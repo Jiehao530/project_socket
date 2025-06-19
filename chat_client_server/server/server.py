@@ -4,6 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../../" ))
 import socket
 import threading
 from chat_socket_project.config.settings import IP, PORT
+from chat_socket_project.auth.login import user_authentication
 
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,7 +13,41 @@ server.listen(5)
 clients = {}
 
 def manage_client(connection, address):
+    print(f"[*] A client with the address: {address} has connected")
+    try:
+        user = user_authentication(connection)
+        if not user:
+            connection.close()
+            return
+        clients[connection] = user
+    except Exception as error:
+        print(f"[x] Error: {error}")
+        connection.close()
+        return
     
+    try:
+        while True:
+            message = connection.recv(1024).decode()
+            if not message or message.lower() == "exit":
+                break
+
+            if message.startswith("IA"):
+                message_for_ia = message[2:].strip()
+            
+            else:
+                print(f"The user {user} said {message}")
+                message_to_send = f"{user}: {message}"
+                for client in clients:
+                    if client != connection:
+                        client.send(message_to_send.encode())
+
+    except Exception as error:
+        print(f"[x] Error : {error}")
+    
+    print(f"[*] Client disconnected: {user} with address {address}")
+    clients.pop(connection)
+    connection.close()
+
 
 print("[*] Server awaiting connection...")
 while True:

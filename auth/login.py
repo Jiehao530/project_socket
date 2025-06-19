@@ -5,7 +5,7 @@ crypt = CryptContext(schemes=["bcrypt"])
 
 def user_authentication(connection):
     while True:
-        connection.send("Do you have an account? (y/n):".encode())
+        connection.send("[*] Do you have an account? (y/n):".encode())
         response = connection.recv(1024).decode().strip().lower()
 
         if response == "y":
@@ -15,7 +15,7 @@ def user_authentication(connection):
                 
                 search = mongo_client.users.find_one({"username": username})
                 if not search:
-                    connection.send("Username not found\n".encode())
+                    connection.send("[x] Username not found\n".encode())
                     continue
                 break
             while True:
@@ -26,7 +26,7 @@ def user_authentication(connection):
                     continue
                 break
 
-            connection.send("Welcome user".encode())
+            connection.send("[*] Welcome user".encode())
             return username
 
         elif response == "n":
@@ -35,7 +35,7 @@ def user_authentication(connection):
                 username = connection.recv(1024).decode().strip()
                 user_exist = mongo_client.users.find_one({"username": username})
                 if user_exist:
-                    connection.send("Existing user".encode())
+                    connection.send("[x] Existing user".encode())
                     continue
                 break
 
@@ -47,8 +47,8 @@ def user_authentication(connection):
                 "username": username,
                 "password": crypt_password
             })
-            connection.send("Welcome user".encode())
+            connection.send("[*] Welcome user".encode())
             return username
 
         else:
-            connection.send("Invalid option\n".encode())
+            connection.send("[x] Invalid option\n".encode())
