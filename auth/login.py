@@ -18,7 +18,6 @@ def user_authentication(connection):
                 print(username)
                 
                 search = mongo_client.users.find_one({"username": username})
-                print("buscando")
                 if not search:
                     connection.send("[x] Username not found\n".encode())
                     continue
