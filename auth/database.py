@@ -1,8 +1,11 @@
+import os
+import sys
 from pymongo import MongoClient
-import os 
 from dotenv import load_dotenv
 
-load_dotenv("../.env")
+base_dir = os.path.abspath(os.path.dirname(__file__) + "/../")
+sys.path.insert(0, base_dir)
+load_dotenv(os.path.join(base_dir, ".env"))
 
 MONGO_CONNECTION = os.getenv("MONGO_URI")
 
